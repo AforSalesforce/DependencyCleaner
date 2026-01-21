@@ -1,0 +1,88 @@
+{
+    "name": "field-cleaner",
+    "displayName": "Field Cleaner",
+    "description": "Visualizes and removes field dependencies in Salesforce metadata.",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.80.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [],
+    "main": "./out/extension.js",
+    "contributes": {
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "field-cleaner-view",
+                    "title": "Field Cleaner",
+                    "icon": "media/icon.svg"
+                }
+            ]
+        },
+        "views": {
+            "field-cleaner-view": [
+                {
+                    "id": "fieldDependencies",
+                    "name": "Field Dependencies",
+                    "icon": "media/icon.svg"
+                }
+            ]
+        },
+        "commands": [
+            {
+                "command": "field-cleaner.searchField",
+                "title": "Find Field Dependencies"
+            },
+            {
+                "command": "field-cleaner.removeDependency",
+                "title": "Remove Dependency",
+                "icon": "$(trash)"
+            },
+            {
+                "command": "field-cleaner.removeAll",
+                "title": "Remove All",
+                "icon": "$(trash)"
+            }
+        ],
+        "menus": {
+            "view/title": [
+                {
+                    "command": "field-cleaner.removeAll",
+                    "when": "view == fieldDependencies",
+                    "group": "navigation"
+                }
+            ],
+            "view/item/context": [
+                {
+                    "command": "field-cleaner.removeDependency",
+                    "when": "view == fieldDependencies && viewItem == dependencyItem",
+                    "group": "inline"
+                }
+            ]
+        }
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "pretest": "npm run compile && npm run lint",
+        "lint": "eslint src --ext ts",
+        "test": "node ./out/test/runTest.js"
+    },
+    "devDependencies": {
+        "@types/mocha": "^10.0.1",
+        "@types/node": "20.2.5",
+        "@types/vscode": "^1.80.0",
+        "@typescript-eslint/eslint-plugin": "^5.59.8",
+        "@typescript-eslint/parser": "^5.59.8",
+        "@vscode/test-electron": "^2.3.2",
+        "eslint": "^8.41.0",
+        "mocha": "^10.2.0",
+        "typescript": "^5.1.3"
+    },
+    "dependencies": {
+        "fast-xml-parser": "^4.2.5"
+    }
+}
