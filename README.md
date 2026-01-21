@@ -43,4 +43,11 @@ It solves the common problem of "Canvas" errors or deployment failures caused by
 - **Page Layouts** (`.layout-meta.xml`)
 - **Flexipages** (`.flexipage-meta.xml`)
 
+### Coming Soon
+- Apex Classes
+- LWC (Lightning Web Components)
+- Validation Rules
+- Flows
+- Formula Fields
+
 > **Note**: Always ensure your work is committed to Git before running bulk removal operations, so you can easily revert if needed.
