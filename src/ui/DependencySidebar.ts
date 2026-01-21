@@ -143,7 +143,12 @@ export class DependencyItem extends vscode.TreeItem {
         this.description = dependency ? dependency.type : '';
 
         if (dependency) {
-            this.contextValue = 'dependencyItem'; // For "Remove" action context
+            // Only allow automated removal for supported types
+            if (dependency.type === 'Layout' || dependency.type === 'Flexipage') {
+                this.contextValue = 'dependencyItem'; // Enables "Remove" action
+            } else {
+                this.contextValue = 'manualDependencyItem'; // No removal action
+            }
         }
     }
 }

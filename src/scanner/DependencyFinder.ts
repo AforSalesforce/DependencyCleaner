@@ -6,7 +6,7 @@ import { Logger } from '../utils/Logger';
 export interface Dependency {
     filePath: string;
     fileName: string;
-    type: 'Layout' | 'Flexipage' | 'Other';
+    type: string;
     locations: string[]; // For now just storing "found" validation
 }
 
@@ -20,8 +20,15 @@ export class DependencyFinder {
     public async findDependencies(fieldName: string, token?: vscode.CancellationToken): Promise<Dependency[]> {
         const dependencies: Dependency[] = [];
 
-        // Use findFiles to respect .gitignore and use VS Code's optimized search
-        const files = await vscode.workspace.findFiles('**/*.{layout-meta.xml,flexipage-meta.xml}', '**/node_modules/**');
+        // Updated glob to include:
+        // - Apex: .cls
+        // - LWC: .js, .html
+        // - Validation Rules: .validationRule-meta.xml
+        // - Flows: .flow-meta.xml
+        // - Fields (formulas): .field-meta.xml
+        // - Objects (containing validation rules/formulas): .object-meta.xml
+        const pattern = '**/*.{layout-meta.xml,flexipage-meta.xml,cls,js,html,validationRule-meta.xml,flow-meta.xml,field-meta.xml,object-meta.xml}';
+        const files = await vscode.workspace.findFiles(pattern, '**/node_modules/**');
 
         for (const uri of files) {
             if (token && token.isCancellationRequested) {
@@ -36,7 +43,7 @@ export class DependencyFinder {
                     dependencies.push({
                         filePath: uri.fsPath,
                         fileName: path.basename(uri.fsPath),
-                        type: uri.fsPath.endsWith('layout-meta.xml') ? 'Layout' : 'Flexipage',
+                        type: this.determineType(uri.fsPath),
                         locations: ['Found in file']
                     });
                 }
@@ -46,5 +53,17 @@ export class DependencyFinder {
         }
 
         return dependencies;
+    }
+
+    private determineType(filePath: string): 'Layout' | 'Flexipage' | 'Apex Class' | 'LWC' | 'Validation Rule' | 'Flow' | 'Field' | 'Custom Object' | 'Other' {
+        if (filePath.endsWith('layout-meta.xml')) return 'Layout';
+        if (filePath.endsWith('flexipage-meta.xml')) return 'Flexipage';
+        if (filePath.endsWith('.cls')) return 'Apex Class';
+        if (filePath.endsWith('.js') || filePath.endsWith('.html')) return 'LWC';
+        if (filePath.endsWith('validationRule-meta.xml')) return 'Validation Rule';
+        if (filePath.endsWith('flow-meta.xml')) return 'Flow';
+        if (filePath.endsWith('field-meta.xml')) return 'Field';
+        if (filePath.endsWith('object-meta.xml')) return 'Custom Object';
+        return 'Other';
     }
 }
